@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Вайб-кодинг · CARAVAN 2026</title>
+<style>
+  :root{
+    --cream:#F6ECE0; --navy:#1B2A4A; --navy-soft:#2E4370;
+    --accent:#C2492E; --accent-soft:#E8A48F;
+    --card:#FFFFFF; --ok:#2E7D4F; --warn:#B7770C;
+    --radius:14px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    background:var(--cream); color:var(--navy); line-height:1.55;
+  }
+  .wrap{max-width:720px; margin:0 auto; padding:0 16px 80px;}
+  h1{font-size:1.55rem; line-height:1.25; margin-bottom:6px;}
+  h2{font-size:1.25rem; margin:0 0 12px; color:var(--navy);}
+  h3{font-size:1.02rem; margin-bottom:6px;}
+  p{margin-bottom:10px;}
+  a{color:var(--accent);}
+  section{margin-top:34px;}
+  .card{background:var(--card); border-radius:var(--radius); padding:18px; box-shadow:0 2px 10px rgba(27,42,74,.08); margin-bottom:14px;}
+
+  /* header */
+  header{padding:26px 0 4px;}
+  .badge{display:inline-block; background:var(--navy); color:var(--cream); font-size:.72rem; padding:4px 10px; border-radius:20px; margin-bottom:10px; letter-spacing:.03em;}
+  .sub{color:var(--navy-soft); font-size:.92rem;}
+  .vibe-note{font-size:.8rem; color:var(--navy-soft); margin-top:8px; font-style:italic;}
+
+  /* nav chips */
+  nav{position:sticky; top:0; background:var(--cream); padding:10px 0; z-index:50; overflow-x:auto; white-space:nowrap; -webkit-overflow-scrolling:touch; border-bottom:1px solid rgba(27,42,74,.12);}
+  nav a{display:inline-block; font-size:.8rem; text-decoration:none; color:var(--navy); background:#fff; border:1px solid rgba(27,42,74,.18); border-radius:20px; padding:5px 12px; margin-right:6px;}
+
+  /* name form */
+  input[type=text]{width:100%; font-size:1.05rem; padding:12px 14px; border:2px solid var(--navy-soft); border-radius:10px; background:#fff; color:var(--navy);}
+  input[type=text]:focus{outline:none; border-color:var(--accent);}
+  .btn{display:inline-block; width:100%; text-align:center; font-size:1.05rem; font-weight:600; padding:13px; margin-top:10px; border:none; border-radius:10px; background:var(--accent); color:#fff; cursor:pointer;}
+  .btn:active{transform:scale(.98);}
+  .btn-secondary{background:var(--navy);}
+  .btn-small{width:auto; font-size:.85rem; padding:8px 14px; margin-top:8px;}
+
+  /* assignment result */
+  #assignResult{display:none; text-align:center; padding:10px 0;}
+  #assignResult.show{display:block;}
+  .team-name{font-size:1.9rem; font-weight:800; color:var(--accent); margin:6px 0;}
+  .spin{font-size:1.4rem; font-weight:700; color:var(--navy-soft); min-height:2rem;}
+
+  /* team cards */
+  .team-card{border-left:5px solid var(--accent); }
+  .team-card.dim{opacity:.55; border-left-color:var(--navy-soft);}
+  .team-card h3{color:var(--accent); font-size:1.15rem;}
+  .team-meta{font-size:.9rem;}
+  .team-meta b{color:var(--navy-soft);}
+  details summary{cursor:pointer; font-weight:600; color:var(--navy-soft); padding:6px 0;}
+
+  /* timeline */
+  .tl{list-style:none;}
+  .tl li{display:flex; gap:12px; padding:8px 0; border-bottom:1px dashed rgba(27,42,74,.15); font-size:.95rem;}
+  .tl time{flex:0 0 92px; font-weight:700; color:var(--accent);}
+
+  /* tabs */
+  .tabs{display:flex; gap:8px; margin-bottom:14px;}
+  .tab{flex:1; text-align:center; padding:11px 6px; border-radius:10px; border:2px solid var(--navy-soft); font-weight:700; font-size:.9rem; cursor:pointer; background:#fff; color:var(--navy);}
+  .tab.active{background:var(--navy); color:var(--cream); border-color:var(--navy);}
+  .track{display:none;}
+  .track.active{display:block;}
+
+  /* checklist */
+  .check{list-style:none;}
+  .check li{display:flex; align-items:flex-start; gap:10px; padding:9px 0; border-bottom:1px dashed rgba(27,42,74,.14); font-size:.95rem;}
+  .check input{margin-top:4px; width:19px; height:19px; accent-color:var(--accent); flex-shrink:0;}
+  .check li.done{opacity:.55; text-decoration:line-through;}
+
+  /* template */
+  pre{background:var(--navy); color:var(--cream); padding:16px; border-radius:12px; font-size:.82rem; line-height:1.5; overflow-x:auto; white-space:pre-wrap; word-break:break-word;}
+  pre .ph{color:#FFCF8E; font-weight:700;}
+  .fields label{display:block; font-size:.82rem; font-weight:600; margin:10px 0 3px; color:var(--navy-soft);}
+  .fields input{font-size:.95rem; padding:9px 12px; border-width:1px;}
+
+  .alert{border-radius:12px; padding:14px 16px; margin:14px 0; font-size:.93rem;}
+  .alert-warn{background:#FDF3DC; border:1.5px solid var(--warn); color:#6B4A08;}
+  .alert-info{background:#E7EDF9; border:1.5px solid var(--navy-soft);}
+
+  /* ladder */
+  .ladder{list-style:none; counter-reset:lvl;}
+  .ladder li{position:relative; padding:10px 0 10px 52px; border-bottom:1px dashed rgba(27,42,74,.14); font-size:.93rem;}
+  .ladder li::before{
+    counter-increment:lvl; content:"v" counter(lvl);
+    position:absolute; left:0; top:10px; width:38px; height:38px;
+    background:var(--accent); color:#fff; font-weight:800; border-radius:10px;
+    display:flex; align-items:center; justify-content:center; font-size:.9rem;
+  }
+
+  /* radar formula */
+  .formula{display:flex; flex-wrap:wrap; gap:8px; align-items:stretch; justify-content:center; text-align:center; margin:14px 0;}
+  .formula .fbox{background:#fff; border:2px solid var(--navy-soft); border-radius:12px; padding:12px 10px; flex:1 1 130px; font-size:.85rem;}
+  .formula .fbox b{display:block; font-size:1.4rem; margin-bottom:4px;}
+  .formula .fop{align-self:center; font-size:1.5rem; font-weight:800; color:var(--accent);}
+  .formula .fres{background:var(--navy); color:var(--cream); border-color:var(--navy);}
+
+  footer{margin-top:50px; padding-top:16px; border-top:1px solid rgba(27,42,74,.15); font-size:.8rem; color:var(--navy-soft); text-align:center;}
+  .copied{color:var(--ok); font-size:.85rem; margin-left:8px;}
+</style>
+</head>
+<body>
+
+<nav class="wrap" style="padding-top:10px;padding-bottom:10px;">
+  <a href="#reg">Редакция</a>
+  <a href="#program">Программа</a>
+  <a href="#task">Задание</a>
+  <a href="#practice">Практика</a>
+  <a href="#radar">Радар</a>
+  <a href="#share">Демо</a>
+  <a href="#materials">Материалы</a>
+</nav>
+
+<div class="wrap">
+
+<header>
+  <span class="badge">CARAVAN · Connect for Peace 2026 · Алматы · 8 июля, 11:30</span>
+  <h1>ИИ в журналистике: вайб-кодинг и автоматизация новостей</h1>
+  <p class="sub">Мастер-класс Асхата Еркимбая. Сегодня вы не слушаете про вайб-кодинг — вы его делаете.</p>
+  <p class="vibe-note">⚡ Этот сайт собран вайб-кодингом за один вечер — ноль строк кода вручную. К концу сессии вы поймёте, как это работает.</p>
+</header>
+
+<!-- ═══════════ 1. РЕГИСТРАЦИЯ / РЕДАКЦИЯ ═══════════ -->
+<section id="reg">
+  <h2>1 · Получите свою редакцию</h2>
+  <div class="card" id="regCard">
+    <p>Введите имя (или ник) — сайт распределит вас в одну из шести редакций Центральной Азии. Сегодня вы работаете в её составе.</p>
+    <input type="text" id="nameInput" placeholder="Ваше имя, например: Айгерим" autocomplete="off">
+    <button class="btn" onclick="assign()">Узнать свою редакцию</button>
+    <div id="assignResult">
+      <div class="spin" id="spinBox"></div>
+      <div id="finalBox" style="display:none;">
+        <p style="font-size:.9rem;">Ваша редакция:</p>
+        <div class="team-name" id="teamNameBox"></div>
+        <p class="sub" id="helloBox"></p>
+        <button class="btn btn-small btn-secondary" onclick="resetAssign()">Ввести другое имя</button>
+      </div>
+    </div>
+  </div>
+  <div id="teamCards"></div>
+  <details id="otherTeams" style="display:none;">
+    <summary>Показать остальные редакции</summary>
+    <div id="otherTeamCards"></div>
+  </details>
+</section>
+
+<!-- ═══════════ 2. ПРОГРАММА ═══════════ -->
+<section id="program">
+  <h2>2 · Программа (90 минут)</h2>
+  <div class="card">
+    <ul class="tl">
+      <li><time>11:30</time><span>Открытие: одна утренняя история</span></li>
+      <li><time>11:35</time><span>Регистрация здесь + распределение по редакциям</span></li>
+      <li><time>11:41</time><span>Как устроен новостной Радар — минимум теории</span></li>
+      <li><time>11:55</time><span>Брифинг: задание для вашей редакции</span></li>
+      <li><time>12:00</time><span><b>Вайб-кодинг: 35 минут — собираем агента</b></span></li>
+      <li><time>12:35</time><span>Демо: каждая редакция показывает результат</span></li>
+      <li><time>12:50</time><span>Финал: от агента к Радару. Что останется журналисту</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══════════ 3. ЗАДАНИЕ ═══════════ -->
+<section id="task">
+  <h2>3 · Задание вашей редакции</h2>
+  <div class="card">
+    <p><b>Соберите редакционного ИИ-ассистента</b>, который из потока новостей выбирает темы именно для вашей аудитории и объясняет, почему они важны.</p>
+    <p>Прежде чем открывать инструмент — ответьте командой на 4 вопроса (подход Джо Амдитиса, Center for Cooperative Media):</p>
+    <ol style="padding-left:20px; font-size:.95rem;">
+      <li>Какую <b>проблему</b> редакции это решает?</li>
+      <li><b>Кто</b> будет этим пользоваться?</li>
+      <li>Что инструмент должен <b>делать</b> — конкретно?</li>
+      <li>Как вы <b>поймёте</b>, что он работает хорошо?</li>
+    </ol>
+    <p style="font-size:.9rem; color:var(--navy-soft);">Журналист в вайб-кодинге — это продакт-менеджер: не пишет код, а точно формулирует, что нужно.</p>
+  </div>
+  <div class="alert alert-info">
+    <b>Роли в редакции</b> (если вас трое и больше): <b>промпт-инженер</b> — печатает и формулирует; <b>редактор</b> — следит, чтобы ассистент говорил как ваша редакция; <b>тестер</b> — подбрасывает заголовки и ищет, где ассистент ошибается.
+  </div>
+</section>
+
+<!-- ═══════════ 4. ПРАКТИКА ═══════════ -->
+<section id="practice">
+  <h2>4 · Практика: два трека</h2>
+  <p style="font-size:.92rem;">Все работают на <b>бесплатном тарифе</b> Google AI Studio. Выберите трек по силам — апгрейды ниже никто не отменял.</p>
+
+  <div class="tabs">
+    <div class="tab active" onclick="showTrack(1,this)">Трек 1 · Промпт-агент</div>
+    <div class="tab" onclick="showTrack(2,this)">Трек 2 · Build-приложение</div>
+  </div>
+
+  <!-- TRACK 1 -->
+  <div class="track active" id="track1">
+    <div class="card">
+      <h3>Ассистент редакции в AI Studio</h3>
+      <ul class="check" data-track="t1">
+        <li><input type="checkbox"><span>Откройте <a href="https://aistudio.google.com" target="_blank" rel="noopener">aistudio.google.com</a> и войдите с Google-аккаунтом</span></li>
+        <li><input type="checkbox"><span>Создайте новый чат (Chat / Create prompt)</span></li>
+        <li><input type="checkbox"><span>Заполните поля ниже и скопируйте готовый промпт</span></li>
+        <li><input type="checkbox"><span>Вставьте его в <b>System instructions</b></span></li>
+        <li><input type="checkbox"><span>Тест: вставьте <b>текст</b> 5–7 свежих заголовков и посмотрите на карточки</span></li>
+        <li><input type="checkbox"><span>Улучшите: что ассистент понял не так? Поправьте промпт и повторите</span></li>
+        <li><input type="checkbox"><span>Сохраните и отправьте ссылку (Share) в Telegram-группу сессии</span></li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>Конструктор промпта</h3>
+      <p style="font-size:.85rem; color:var(--navy-soft);">Поля заполнены из карточки вашей редакции — можно менять.</p>
+      <div class="fields">
+        <label>Название редакции</label><input type="text" id="f_name">
+        <label>Город / регион</label><input type="text" id="f_region">
+        <label>Аудитория</label><input type="text" id="f_aud">
+        <label>Главные темы (3–5)</label><input type="text" id="f_topics">
+        <label>Язык ответов</label><input type="text" id="f_lang">
+      </div>
+      <pre id="tpl"></pre>
+      <button class="btn btn-secondary" onclick="copyTpl(this)">📋 Скопировать промпт</button>
+    </div>
+
+    <div class="alert alert-warn">
+      ⚠️ <b>Вставляйте ТЕКСТ заголовков, а не ссылки.</b> Модель в AI Studio не открывает URL — она «угадывает» содержание по адресу и уверенно фантазирует. Скопируйте сами заголовки.
+    </div>
+  </div>
+
+  <!-- TRACK 2 -->
+  <div class="track" id="track2">
+    <div class="card">
+      <h3>Мини-приложение в AI Studio Build</h3>
+      <p style="font-size:.9rem;">Настоящий вайб-кодинг: описываете приложение словами — получаете работающий веб-инструмент на Gemini.</p>
+      <ul class="check" data-track="t2">
+        <li><input type="checkbox"><span>Откройте <a href="https://aistudio.google.com" target="_blank" rel="noopener">aistudio.google.com</a> → вкладка <b>Build</b></span></li>
+        <li><input type="checkbox"><span>Опишите приложение одним абзацем (пример ниже) и запустите сборку</span></li>
+        <li><input type="checkbox"><span>Подождите 1–3 минуты, протестируйте на 5–7 заголовках (текстом!)</span></li>
+        <li><input type="checkbox"><span>Итерации: просите изменения обычными словами («добавь кнопку…», «сделай карточки компактнее»)</span></li>
+        <li><input type="checkbox"><span>Share app → ссылку в Telegram-группу. Не делится? Скриншоты в Telegram или свой экран по HDMI</span></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Пример описания для Build</h3>
+      <pre id="buildTpl"></pre>
+      <button class="btn btn-secondary" onclick="copyBuild(this)">📋 Скопировать описание</button>
+    </div>
+    <div class="alert alert-warn">
+      ⚠️ Здесь тоже: тестируйте <b>текстом заголовков</b>, не ссылками.
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🚀 Стало легко? Лестница апгрейдов</h3>
+    <ul class="ladder">
+      <li>Промпт-агент отвечает карточками в стиле вашей редакции (Трек 1)</li>
+      <li>То же — но как Build-приложение с интерфейсом (Трек 2)</li>
+      <li>Функция Радара: ассистент оценивает каждую новость <b>0–10</b> по важности для вашей аудитории и объясняет оценку</li>
+      <li>Двуязычие: карточки сразу на двух языках вашего региона</li>
+    </ul>
+    <p style="font-size:.85rem; color:var(--navy-soft); margin-top:8px;">Прошли все четыре? Станьте советником соседней редакции.</p>
+  </div>
+</section>
+
+<!-- ═══════════ 5. РАДАР ═══════════ -->
+<section id="radar">
+  <h2>5 · Как из этого получается Радар</h2>
+  <div class="card">
+    <p>Ваш агент — это «мозг». До автоматики новостей ему не хватает двух вещей:</p>
+    <div class="formula">
+      <div class="fbox"><b>🧠</b>Агент<br><span style="font-size:.75rem;">выбирает и объясняет<br>(вы его уже собрали)</span></div>
+      <div class="fop">+</div>
+      <div class="fbox"><b>🤲</b>«Руки»<br><span style="font-size:.75rem;">сам собирает<br>источники (RSS, сайты)</span></div>
+      <div class="fop">+</div>
+      <div class="fbox"><b>⏰</b>«Будильник»<br><span style="font-size:.75rem;">сам просыпается<br>по расписанию</span></div>
+      <div class="fop">=</div>
+      <div class="fbox fres"><b>📡</b>Радар<br><span style="font-size:.75rem;">каждое утро — готовый дайджест в Telegram</span></div>
+    </div>
+    <p style="font-size:.9rem;">«Руки» и «будильник» тоже собираются вайб-кодингом — без программиста. Пошаговый гайд, как дособрать Радар дома, — в материалах ниже.</p>
+  </div>
+</section>
+
+<!-- ═══════════ 6. ДЕМО / TELEGRAM ═══════════ -->
+<section id="share">
+  <h2>6 · Демо: покажите, что собрали</h2>
+  <div class="card">
+    <p>В <b>12:35</b> каждая редакция показывает агента — 2 минуты: что делает, что удивило, что не получилось.</p>
+    <p>Ссылку на агента (или скриншоты) отправьте в Telegram-группу сессии — ведущий откроет её на проекторе.</p>
+    <a class="btn" id="tgBtn" href="#" target="_blank" rel="noopener">✈️ Открыть Telegram-группу</a>
+    <p id="tgNote" style="font-size:.85rem; color:var(--navy-soft); margin-top:8px; text-align:center;">QR группы — на экране в зале.</p>
+  </div>
+</section>
+
+<!-- ═══════════ 7. МАТЕРИАЛЫ ═══════════ -->
+<section id="materials">
+  <h2>7 · Материалы — заберите с собой</h2>
+  <div class="card">
+    <ul style="list-style:none; font-size:.93rem;">
+      <li style="padding:7px 0; border-bottom:1px dashed rgba(27,42,74,.14);">📗 <a href="https://docs.google.com/document/d/1G0ruf8BQJpdil4kiIYXMM4SpIIayfX7oJo8x-6PBEqs" target="_blank" rel="noopener">Гайд «Собери свой Радар» — на русском</a></li>
+      <li style="padding:7px 0; border-bottom:1px dashed rgba(27,42,74,.14);">📘 <a href="https://docs.google.com/document/d/11Gi4wHUoYp2ya9A2vVQSAzD-sCCur8m2eVLVXW5hxvQ" target="_blank" rel="noopener">Гайд «Өз Радарыңды құрастыр» — қазақша</a></li>
+      <li style="padding:7px 0; border-bottom:1px dashed rgba(27,42,74,.14);">🛠 <a href="https://aistudio.google.com" target="_blank" rel="noopener">Google AI Studio</a> — всё, что вы делали сегодня</li>
+      <li style="padding:7px 0; border-bottom:1px dashed rgba(27,42,74,.14);">📄 <a href="https://generative-ai-newsroom.com/vibe-coding-for-newsrooms-6848b17dac99" target="_blank" rel="noopener">Joe Amditis — Vibe Coding for Newsrooms</a> (та самая статья про 4 вопроса)</li>
+      <li style="padding:7px 0; border-bottom:1px dashed rgba(27,42,74,.14);">🧰 <a href="https://github.com/jamditis/claude-skills-journalism" target="_blank" rel="noopener">jamditis/claude-skills-journalism</a> — готовые ИИ-скиллы для редакций</li>
+      <li style="padding:7px 0;">🎓 <a href="https://journalismcourses.org" target="_blank" rel="noopener">Knight Center</a> — бесплатные курсы по ИИ в журналистике</li>
+    </ul>
+    <p style="font-size:.88rem; margin-top:10px;">Вопросы после сессии: Асхат Еркимбай — <a href="mailto:urimtal@gmail.com">urimtal@gmail.com</a></p>
+  </div>
+</section>
+
+<!-- ═══════════ 8. ГРАНИЦЫ ═══════════ -->
+<section id="rules">
+  <h2>8 · Границы: читать обязательно</h2>
+  <div class="alert alert-warn">
+    <b>Не вставляйте в ИИ-инструменты:</b> персональные данные, контакты источников, неопубликованные расследования, внутренние документы редакции. Вайб-кодинг — для задач с <b>низким риском</b>.
+  </div>
+  <div class="alert alert-info">
+    <ul style="padding-left:18px; font-size:.9rem;">
+      <li>Ответственность за опубликованное всегда на редакции, не на модели.</li>
+      <li>Закон РК об ИИ требует прозрачности: маркируйте ИИ-контент для аудитории.</li>
+      <li>Инструменты меняются каждые месяцы. Устаревает интерфейс — не подход: 4 вопроса и роль продакт-менеджера останутся.</li>
+    </ul>
+  </div>
+</section>
+
+<footer>
+  CARAVAN · Connect for Peace 2026 · SmartPoint, Алматы<br>
+  Сайт собран вайб-кодингом · июль 2026
+</footer>
+
+</div><!-- /wrap -->
+
+<script>
+/* ═══════ CONFIG ═══════ */
+var TELEGRAM_LINK = ""; // ← ссылка-приглашение Telegram-группы сессии
+
+/* ═══════ РЕДАКЦИИ ═══════ */
+var TEAMS = [
+  {
+    name:"«Арал»", emoji:"🌊",
+    region:"Приаралье: Кызылорда — Каракалпакстан",
+    aud:"жители Приаралья — фермеры, рыбаки, семьи, живущие с последствиями высыхания моря",
+    topics:"вода и климат, здоровье, сельское хозяйство, экологические компенсации",
+    lang:"казахский",
+    desc:"Экологическое издание двух стран об одной общей беде — и общей надежде."
+  },
+  {
+    name:"«Көш»", emoji:"🎒",
+    region:"Бишкек и Ош",
+    aud:"трудовые мигранты и их семьи дома",
+    topics:"миграционные правила, денежные переводы, права работников, истории людей в пути",
+    lang:"кыргызский и русский",
+    desc:"Медиа для тех, кто уехал работать, и тех, кто их ждёт."
+  },
+  {
+    name:"«Жибек Жолы»", emoji:"🚚",
+    region:"Худжанд — Шымкент",
+    aud:"малый бизнес, торговцы, перевозчики на трансграничных маршрутах",
+    topics:"границы и таможня, курсы валют, логистика, базары и цены",
+    lang:"русский и узбекский",
+    desc:"Деловое издание одного коридора и двух стран."
+  },
+  {
+    name:"«Памир»", emoji:"⛰️",
+    region:"Хорог и высокогорные районы Таджикистана",
+    aud:"жители горных сообществ, часто без стабильной связи",
+    topics:"дороги и связь, стихийные бедствия, энергия, образование",
+    lang:"таджикский и русский",
+    desc:"Новости, которые в горах равны безопасности."
+  },
+  {
+    name:"«Факт.Азия»", emoji:"🔍",
+    region:"вся Центральная Азия (распределённая команда)",
+    aud:"журналисты и медиаграмотные читатели пяти стран",
+    topics:"проверка вирусных постов, дезинформация и FIMI, медиаграмотность",
+    lang:"русский, с переводами на языки региона",
+    desc:"Региональный фактчек: одна ложь пересекает границы быстрее правды."
+  },
+  {
+    name:"«Yoshlar»", emoji:"🎧",
+    region:"Ташкент",
+    aud:"молодёжь 16–25: студенты, первые работы, первые стартапы",
+    topics:"образование и стипендии, работа и стартапы, культура, городская жизнь",
+    lang:"узбекский и русский",
+    desc:"Молодёжное медиа, которое говорит с ровесниками на их языке."
+  }
+];
+
+/* ═══════ ХЭШ-РАСПРЕДЕЛЕНИЕ ═══════ */
+function hashName(s){
+  s = s.trim().toLowerCase().replace(/\s+/g," ");
+  var h = 5381;
+  for (var i=0;i<s.length;i++){ h = ((h<<5)+h+s.charCodeAt(i))|0; }
+  return Math.abs(h);
+}
+
+var myTeamIdx = null;
+
+function assign(){
+  var name = document.getElementById("nameInput").value.trim();
+  if(!name){ document.getElementById("nameInput").focus(); return; }
+  var idx = hashName(name) % TEAMS.length;
+  var res = document.getElementById("assignResult");
+  var spin = document.getElementById("spinBox");
+  var fin = document.getElementById("finalBox");
+  res.classList.add("show"); fin.style.display="none"; spin.style.display="block";
+  var t=0, iv=setInterval(function(){
+    spin.textContent = TEAMS[t % TEAMS.length].emoji + " " + TEAMS[t % TEAMS.length].name;
+    t++;
+    if(t>14){ clearInterval(iv); finish(name, idx); }
+  },110);
+}
+
+function finish(name, idx){
+  myTeamIdx = idx;
+  var team = TEAMS[idx];
+  document.getElementById("spinBox").style.display="none";
+  var fin = document.getElementById("finalBox");
+  fin.style.display="block";
+  document.getElementById("teamNameBox").textContent = team.emoji + " " + team.name;
+  document.getElementById("helloBox").textContent = name + ", найдите коллег из вашей редакции и сядьте вместе.";
+  try{ localStorage.setItem("cv_name", name); localStorage.setItem("cv_team", idx); }catch(e){}
+  renderTeams();
+  fillFields(team);
+}
+
+function resetAssign(){
+  myTeamIdx = null;
+  try{ localStorage.removeItem("cv_name"); localStorage.removeItem("cv_team"); }catch(e){}
+  document.getElementById("assignResult").classList.remove("show");
+  document.getElementById("nameInput").value = "";
+  document.getElementById("nameInput").focus();
+  renderTeams();
+}
+
+/* ═══════ КАРТОЧКИ ═══════ */
+function teamCardHTML(t, mine){
+  return '<div class="card team-card'+(mine?'':' dim')+'">'
+    +'<h3>'+t.emoji+' '+t.name+(mine?' — ваша редакция':'')+'</h3>'
+    +'<p class="team-meta" style="margin-bottom:6px;"><i>'+t.desc+'</i></p>'
+    +'<p class="team-meta"><b>Регион:</b> '+t.region+'<br>'
+    +'<b>Аудитория:</b> '+t.aud+'<br>'
+    +'<b>Темы:</b> '+t.topics+'<br>'
+    +'<b>Язык:</b> '+t.lang+'</p></div>';
+}
+
+function renderTeams(){
+  var main = document.getElementById("teamCards");
+  var others = document.getElementById("otherTeamCards");
+  var wrap = document.getElementById("otherTeams");
+  if(myTeamIdx === null){
+    main.innerHTML = TEAMS.map(function(t){ return teamCardHTML(t,true); }).join("");
+    wrap.style.display = "none"; others.innerHTML = "";
+  } else {
+    main.innerHTML = teamCardHTML(TEAMS[myTeamIdx], true);
+    others.innerHTML = TEAMS.filter(function(_,i){return i!==myTeamIdx;}).map(function(t){ return teamCardHTML(t,false); }).join("");
+    wrap.style.display = "block";
+  }
+}
+
+/* ═══════ ШАБЛОН ПРОМПТА ═══════ */
+function fillFields(team){
+  document.getElementById("f_name").value = team.name.replace(/[«»]/g,"");
+  document.getElementById("f_region").value = team.region;
+  document.getElementById("f_aud").value = team.aud;
+  document.getElementById("f_topics").value = team.topics;
+  document.getElementById("f_lang").value = team.lang;
+  renderTpl();
+}
+
+function fld(id, ph){
+  var v = document.getElementById(id).value.trim();
+  return v ? esc(v) : '<span class="ph">['+ph+']</span>';
+}
+function esc(s){ return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+function tplText(html){
+  var name=g("f_name","НАЗВАНИЕ"), reg=g("f_region","ГОРОД/РЕГИОН"), aud=g("f_aud","кто читает"),
+      top=g("f_topics","3–5 тем"), lang=g("f_lang","ЯЗЫК");
+  function g(id, ph){
+    var v = document.getElementById(id).value.trim();
+    return v || "["+ph+"]";
+  }
+  return "Ты — редакционный ассистент издания "+name+" из "+reg+".\n"
+    +"Наша аудитория: "+aud+". Наши главные темы: "+top+".\n\n"
+    +"Твоя задача: когда я присылаю тебе подборку новостей или ссылок,\n"
+    +"ты выбираешь 3 самые сильные темы для нашей редакции и для каждой даёшь:\n"
+    +"1. Заголовок-рабочее название.\n"
+    +"2. Локальный угол: как это МЕНЯЕТ жизнь, деньги, права или безопасность\n"
+    +"   нашего читателя прямо сейчас (географическая близость ≠ локальный угол).\n"
+    +"3. Три вопроса репортёру: кому позвонить и что спросить.\n\n"
+    +"Отвечай на "+lang+". Пиши коротко, в формате карточек.";
+}
+
+function renderTpl(){
+  var txt = tplText();
+  document.getElementById("tpl").innerHTML = esc(txt).replace(/\[([^\]]+)\]/g,'<span class="ph">[$1]</span>');
+  renderBuildTpl();
+}
+
+function renderBuildTpl(){
+  function g(id, ph){ var v=document.getElementById(id).value.trim(); return v||"["+ph+"]"; }
+  var txt = "Сделай простое веб-приложение «Редакционный радар» для издания "+g("f_name","НАЗВАНИЕ")+" ("+g("f_region","регион")+").\n\n"
+    +"Наша аудитория: "+g("f_aud","кто читает")+". Темы: "+g("f_topics","темы")+".\n\n"
+    +"В приложении: большое текстовое поле, куда я вставляю заголовки новостей, "
+    +"и кнопка «Проанализировать». Приложение выбирает 3 самые важные новости для нашей аудитории "
+    +"и показывает их карточками: рабочий заголовок, локальный угол, три вопроса репортёру. "
+    +"Интерфейс и ответы — на "+g("f_lang","язык")+" языке.";
+  document.getElementById("buildTpl").textContent = txt;
+}
+
+function copyTpl(btn){ copyText(tplText(), btn); }
+function copyBuild(btn){ copyText(document.getElementById("buildTpl").textContent, btn); }
+
+function copyText(txt, btn){
+  function done(){
+    var old = btn.textContent;
+    btn.textContent = "✅ Скопировано";
+    setTimeout(function(){ btn.textContent = old; }, 1600);
+  }
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(done, function(){ fallbackCopy(txt); done(); });
+  } else { fallbackCopy(txt); done(); }
+}
+function fallbackCopy(txt){
+  var ta=document.createElement("textarea"); ta.value=txt;
+  document.body.appendChild(ta); ta.select();
+  try{ document.execCommand("copy"); }catch(e){}
+  document.body.removeChild(ta);
+}
+
+/* ═══════ ТРЕКИ ═══════ */
+function showTrack(n, el){
+  document.querySelectorAll(".tab").forEach(function(t){ t.classList.remove("active"); });
+  document.querySelectorAll(".track").forEach(function(t){ t.classList.remove("active"); });
+  el.classList.add("active");
+  document.getElementById("track"+n).classList.add("active");
+}
+
+/* ═══════ ЧЕКЛИСТЫ (localStorage) ═══════ */
+document.querySelectorAll(".check").forEach(function(list){
+  var key = "cv_check_" + list.getAttribute("data-track");
+  var saved = [];
+  try{ saved = JSON.parse(localStorage.getItem(key) || "[]"); }catch(e){}
+  var boxes = list.querySelectorAll("input[type=checkbox]");
+  boxes.forEach(function(cb, i){
+    if(saved[i]){ cb.checked = true; cb.parentElement.classList.add("done"); }
+    cb.addEventListener("change", function(){
+      cb.parentElement.classList.toggle("done", cb.checked);
+      var state = Array.prototype.map.call(boxes, function(b){ return b.checked; });
+      try{ localStorage.setItem(key, JSON.stringify(state)); }catch(e){}
+    });
+  });
+});
+
+/* ═══════ TELEGRAM ═══════ */
+(function(){
+  var btn = document.getElementById("tgBtn");
+  if(TELEGRAM_LINK){ btn.href = TELEGRAM_LINK; }
+  else { btn.addEventListener("click", function(e){ e.preventDefault(); alert("Ссылку на группу покажет ведущий — QR на экране в зале."); }); }
+})();
+
+/* ═══════ INIT ═══════ */
+["f_name","f_region","f_aud","f_topics","f_lang"].forEach(function(id){
+  document.getElementById(id).addEventListener("input", renderTpl);
+});
+document.getElementById("nameInput").addEventListener("keydown", function(e){ if(e.key==="Enter") assign(); });
+
+(function init(){
+  var savedName=null, savedTeam=null;
+  try{ savedName = localStorage.getItem("cv_name"); savedTeam = localStorage.getItem("cv_team"); }catch(e){}
+  renderTpl();
+  if(savedName && savedTeam !== null && savedTeam !== ""){
+    document.getElementById("nameInput").value = savedName;
+    document.getElementById("assignResult").classList.add("show");
+    document.getElementById("spinBox").style.display="none";
+    finish(savedName, parseInt(savedTeam,10));
+  } else {
+    renderTeams();
+  }
+})();
+</script>
+</body>
+</html>
