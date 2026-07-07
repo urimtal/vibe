@@ -7,7 +7,7 @@
 <style>
   :root{
     --cream:#F6ECE0; --navy:#1B2A4A; --navy-soft:#2E4370;
-    --accent:#C2492E; --accent-soft:#E8A48F;
+    --accent:#D9661E; --accent-soft:#F7DDC2;
     --card:#FFFFFF; --ok:#2E7D4F; --warn:#B7770C;
     --radius:14px;
   }
@@ -25,6 +25,22 @@
   a{color:var(--accent);}
   section{margin-top:34px;}
   .card{background:var(--card); border-radius:var(--radius); padding:18px; box-shadow:0 2px 10px rgba(27,42,74,.08); margin-bottom:14px;}
+
+  /* logo band (фирменная шапка фестиваля) */
+  .logo-band{background:var(--cream); padding:14px 0 10px;}
+  .logo-band-inner{max-width:720px; margin:0 auto; padding:0 16px; display:flex; align-items:center; justify-content:space-between; gap:12px;}
+  .logo-band img{width:auto; display:block; flex-shrink:1; min-width:0; max-width:42%; object-fit:contain;}
+  .logo-eu{height:28px;}
+  .logo-cfp{height:31px;}
+  .logo-inw{height:25px;}
+  @media (min-width:640px){
+    .logo-eu{height:41px;}
+    .logo-cfp{height:44px;}
+    .logo-inw{height:37px;}
+  }
+
+  /* bottom ornament */
+  .ornament{display:block; width:100%; height:auto; margin-top:44px;}
 
   /* header */
   header{padding:26px 0 4px;}
@@ -108,6 +124,14 @@
 </style>
 </head>
 <body>
+
+<div class="logo-band">
+  <div class="logo-band-inner">
+    <img src="logo_eu.png" alt="Funded by the European Union" class="logo-eu">
+    <img src="logo_cfp.png" alt="CARAVAN · Connect for Peace" class="logo-cfp">
+    <img src="logo_internews.png" alt="Internews" class="logo-inw">
+  </div>
+</div>
 
 <nav class="wrap" style="padding-top:10px;padding-bottom:10px;">
   <a href="#reg">Редакция</a>
@@ -290,9 +314,9 @@
   <h2>6 · Демо: покажите, что собрали</h2>
   <div class="card">
     <p>В <b>12:35</b> каждая редакция показывает агента — 2 минуты: что делает, что удивило, что не получилось.</p>
-    <p>Ссылку на агента (или скриншоты) отправьте в Telegram-группу сессии — ведущий откроет её на проекторе.</p>
+    <p>Ссылку на агента (или скриншоты) отправьте в Telegram-группу CARAVAN — вы уже в ней с первого дня фестиваля. Не в группе? Подойдите к ведущему.</p>
     <a class="btn" id="tgBtn" href="#" target="_blank" rel="noopener">✈️ Открыть Telegram-группу</a>
-    <p id="tgNote" style="font-size:.85rem; color:var(--navy-soft); margin-top:8px; text-align:center;">QR группы — на экране в зале.</p>
+    <p id="tgNote" style="font-size:.85rem; color:var(--navy-soft); margin-top:8px; text-align:center;">Отдельной группы сессии нет — работаем в общей группе фестиваля.</p>
   </div>
 </section>
 
@@ -308,7 +332,7 @@
       <li style="padding:7px 0; border-bottom:1px dashed rgba(27,42,74,.14);">🧰 <a href="https://github.com/jamditis/claude-skills-journalism" target="_blank" rel="noopener">jamditis/claude-skills-journalism</a> — готовые ИИ-скиллы для редакций</li>
       <li style="padding:7px 0;">🎓 <a href="https://journalismcourses.org" target="_blank" rel="noopener">Knight Center</a> — бесплатные курсы по ИИ в журналистике</li>
     </ul>
-    <p style="font-size:.88rem; margin-top:10px;">Вопросы после сессии: Асхат Еркимбай — <a href="mailto:urimtal@gmail.com">urimtal@gmail.com</a></p>
+    <p style="font-size:.88rem; margin-top:10px;">Вопросы после сессии: Асхат Еркимбай — <a href="mailto:ayerkimbay@internews.org">ayerkimbay@internews.org</a></p>
   </div>
 </section>
 
@@ -332,6 +356,8 @@
   </div>
 </section>
 
+<img src="tpl_bottom.png" alt="" class="ornament">
+
 <footer>
   CARAVAN · Connect for Peace 2026 · SmartPoint, Алматы<br>
   Сайт собран вайб-кодингом · июль 2026
@@ -341,7 +367,7 @@
 
 <script>
 /* ═══════ CONFIG ═══════ */
-var TELEGRAM_LINK = ""; // ← ссылка-приглашение Telegram-группы сессии
+var TELEGRAM_LINK = ""; // ← ссылка на общую Telegram-группу CARAVAN (если пусто — группа уже открыта у участников)
 
 /* ═══════ РЕДАКЦИИ ═══════ */
 var TEAMS = [
@@ -566,7 +592,7 @@ document.querySelectorAll(".check").forEach(function(list){
 (function(){
   var btn = document.getElementById("tgBtn");
   if(TELEGRAM_LINK){ btn.href = TELEGRAM_LINK; }
-  else { btn.addEventListener("click", function(e){ e.preventDefault(); alert("Ссылку на группу покажет ведущий — QR на экране в зале."); }); }
+  else { btn.addEventListener("click", function(e){ e.preventDefault(); alert("Мы используем общую группу CARAVAN — она у вас уже открыта в Telegram"); }); }
 })();
 
 /* ═══════ INIT ═══════ */
